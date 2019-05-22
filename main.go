@@ -5,6 +5,8 @@
 // github release to the current directory; it stops if file with such name
 // already exists. For pattern matching see https://golang.org/pkg/path/#Match
 //
+// Upon successful download it prints name of the downloaded file to stdout.
+//
 // To access private repositories pass oAuth token via GITHUB_TOKEN environment
 // variable, see https://github.com/settings/tokens page.
 package main
@@ -135,5 +137,9 @@ func run(ctx context.Context, args runArgs) error {
 	if err := tf.Close(); err != nil {
 		return err
 	}
-	return os.Rename(tf.Name(), dst)
+	if err := os.Rename(tf.Name(), dst); err != nil {
+		return err
+	}
+	fmt.Println(dst)
+	return nil
 }

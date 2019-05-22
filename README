@@ -5,5 +5,7 @@ It downloads first asset matching given pattern of the latest published
 github release to the current directory; it stops if file with such name
 already exists. For pattern matching see https://golang.org/pkg/path/#Match
 
+Upon successful download it prints name of the downloaded file to stdout.
+
 To access private repositories pass oAuth token via GITHUB_TOKEN environment
 variable, see https://github.com/settings/tokens page.
