@@ -1,12 +1,12 @@
-// Command github-release-get downloads single asset from the latest release of
-// given github repository.
+// Command github-release-get downloads single asset from the latest published
+// release of given github repository.
 //
-// It downloads first release asset matching given pattern to the current
-// directory; it stops if file with such name already exists. For pattern
-// matching see https://golang.org/pkg/path/#Match
+// It downloads first asset matching given pattern of the latest published
+// github release to the current directory; it stops if file with such name
+// already exists. For pattern matching see https://golang.org/pkg/path/#Match
 //
-// It expects to find oAuth token in GITHUB_TOKEN environment variable, see
-// https://github.com/settings/tokens page.
+// To access private repositories pass oAuth token via GITHUB_TOKEN environment
+// variable, see https://github.com/settings/tokens page.
 package main
 
 import (
@@ -51,19 +51,19 @@ func run(ctx context.Context, args runArgs) error {
 	if args.Owner == "" || args.Repo == "" || args.Pattern == "" {
 		return fmt.Errorf("one or more mandatory flags missing")
 	}
-	if args.Token == "" {
-		return fmt.Errorf("GITHUB_TOKEN environment is missing")
-	}
 	if args.Timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, args.Timeout)
 		defer cancel()
 	}
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: args.Token},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
+	var client *github.Client
+	switch args.Token {
+	case "":
+		client = github.NewClient(nil)
+	default:
+		client = github.NewClient(oauth2.NewClient(ctx,
+			oauth2.StaticTokenSource(&oauth2.Token{AccessToken: args.Token})))
+	}
 	release, _, err := client.Repositories.GetLatestRelease(ctx, args.Owner, args.Repo)
 	if err != nil {
 		return err
