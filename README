@@ -1,0 +1,9 @@
+Command github-release-get downloads single asset from the latest release of
+given github repository.
+
+It downloads first release asset matching given pattern to the current
+directory; it stops if file with such name already exists. For pattern
+matching see https://golang.org/pkg/path/#Match
+
+It expects to find oAuth token in GITHUB_TOKEN environment variable, see
+https://github.com/settings/tokens page.
